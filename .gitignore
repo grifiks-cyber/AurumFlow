@@ -1,0 +1,16 @@
+.env
+*.session
+*.session-journal
+data/*.db
+logs/
+__pycache__/
+*.pyc
+.env
+*.session
+__pycache__/
+*.pyc
+node_modules/
+venv/
+.venv/
+dist/
+build/

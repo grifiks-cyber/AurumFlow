@@ -1,0 +1,140 @@
+╔══════════════════════════════════════════════════════════════╗
+║        AURUM FLOW — GUÍA OBS PARA TIKTOK LIVE               ║
+╚══════════════════════════════════════════════════════════════╝
+
+ANTES DE EMPEZAR
+─────────────────
+1. Descarga OBS si no lo tienes: https://obsproject.com
+2. Necesitas tener TikTok instalado en el PC o usar TikTok LIVE Studio
+
+
+══════════════════════════════════════════════════════════════
+PASO 1 — CONFIGURAR OBS (Una sola vez)
+══════════════════════════════════════════════════════════════
+
+Ajustes > Vídeo:
+  • Resolución base: 1080 x 1920
+  • Resolución de salida: 1080 x 1920
+  • FPS: 30
+
+Ajustes > Stream:
+  • Servicio: Personalizado
+  • (Lo conectas a TikTok LIVE cuando vayas a empezar)
+
+
+══════════════════════════════════════════════════════════════
+PASO 2 — CREAR LA ESCENA
+══════════════════════════════════════════════════════════════
+
+En OBS, panel "Escenas" → clic "+" → nombre: "Aurum Flow LIVE"
+
+Añade estas fuentes (en orden, de abajo a arriba):
+
+┌─────────────────────────────────────────────────────────────┐
+│ FUENTE 1 — Fondo negro                                      │
+│   Tipo: Color                                               │
+│   Color: #000000                                            │
+│   Tamaño: 1080 x 1920                                       │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ FUENTE 2 — TU GRÁFICO (lo importante)                       │
+│   Tipo: Captura de ventana                                  │
+│   Ventana: tu plataforma de gráficos (TradingView, MT4...)  │
+│   Posición: centro-superior                                 │
+│   Tamaño aprox: 1080 x 1200                                 │
+│                                                             │
+│   ⚠️  Pon el gráfico en XAUUSD, vela 5m o 15m              │
+│       Tema oscuro, limpio, sin demasiados indicadores       │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ FUENTE 3 — OVERLAY AURUM FLOW (señales en tiempo real)      │
+│   Tipo: Navegador (Browser Source)                          │
+│   URL: http://localhost:8765/overlay                        │
+│   Anchura: 1080                                             │
+│   Altura: 1920                                              │
+│   ✅ Marcar "Actualizar navegador cuando la escena esté     │
+│       activa"                                               │
+│                                                             │
+│   El overlay muestra automáticamente:                       │
+│   - Logo Aurum Flow + badge LIVE                            │
+│   - Bias actual (BEARISH/BULLISH)                           │
+│   - Última señal publicada (dirección, precio, SL, TP)     │
+│   - Ticker scrolling en la parte inferior                   │
+└─────────────────────────────────────────────────────────────┘
+
+
+══════════════════════════════════════════════════════════════
+PASO 3 — ARRANCAR EL SISTEMA
+══════════════════════════════════════════════════════════════
+
+Doble clic en:  START_LIVE.bat
+
+Esto arranca:
+  → Bot de señales (lee TrueTrading, publica en canal)
+  → Servidor del overlay (actualiza OBS en tiempo real)
+
+Espera a que aparezca "Bot started" en la ventana.
+Abre el navegador → http://localhost:8765/overlay
+Deberías ver el overlay de Aurum Flow.
+
+
+══════════════════════════════════════════════════════════════
+PASO 4 — CONECTAR A TIKTOK LIVE
+══════════════════════════════════════════════════════════════
+
+Opción A — TikTok LIVE Studio (más fácil):
+  1. Descarga TikTok LIVE Studio
+  2. Selecciona "Pantalla de escritorio"
+  3. Minimiza todo excepto OBS
+  4. Dale a LIVE
+
+Opción B — OBS directo con Stream Key:
+  1. En TikTok app → Perfil → LIVE → Obtener stream key
+  2. En OBS → Ajustes → Stream → Personalizado
+     RTMP URL: rtmp://push.tiktok.com/live/
+     Stream Key: (la que te da TikTok)
+  3. Iniciar transmisión en OBS
+
+
+══════════════════════════════════════════════════════════════
+PASO 5 — QUÉ HACER DURANTE EL LIVE
+══════════════════════════════════════════════════════════════
+
+✅ QUÉ HACER:
+  • Pon el gráfico visible y déjalo correr
+  • Cuando llegue una señal al canal de Telegram, el overlay
+    la muestra automáticamente en pantalla
+  • Puedes decir: "El sistema acaba de detectar una zona SELL
+    en 4730 — bias bajista activo, SL en 4749"
+  • Muestra cómo el precio se mueve hacia TP
+  • Cuando llegue el update de TP1/TP2/SL, muéstralo
+  • Al final di: "Señales gratuitas en @AurumFlowXau en Telegram"
+
+❌ QUÉ NO HACER:
+  • No prometas resultados garantizados
+  • No digas "esto siempre funciona"
+  • No des consejos de inversión directos
+  • No te pongas nervioso si el precio va en contra —
+    es normal, el SL está puesto para aguantarlo
+
+💬 FRASE DE APERTURA (úsala tal cual o adáptala):
+  "Buenas, esto es Aurum Flow — señales de oro en tiempo real.
+   El sistema está activo ahora mismo. Bias bajista, buscamos
+   zonas de venta. Señales gratis en Telegram, link en bio."
+
+
+══════════════════════════════════════════════════════════════
+CHECKLIST ANTES DE EMPEZAR EL LIVE
+══════════════════════════════════════════════════════════════
+
+□ START_LIVE.bat corriendo (dos ventanas abiertas)
+□ http://localhost:8765/overlay carga en el navegador
+□ OBS muestra el overlay encima del gráfico
+□ Gráfico en XAUUSD, tema oscuro, limpio
+□ Link de Telegram en la bio de TikTok (@AurumFlowXau)
+□ Notificaciones de Windows silenciadas
+□ Micrófono en silencio si no vas a hablar
+
+══════════════════════════════════════════════════════════════

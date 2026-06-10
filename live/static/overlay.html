@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Aurum Flow — Live Overlay</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: transparent;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      overflow: hidden;
+      width: 1920px;
+      height: 1080px;
+    }
+
+    /* ── Top bar ─────────────────────────────────────────── */
+    #top-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 64px;
+      background: linear-gradient(90deg, #0a0a0a 0%, #111 60%, transparent 100%);
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      gap: 32px;
+      border-bottom: 1px solid rgba(212,175,55,0.3);
+    }
+
+    #logo {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #D4AF37;
+      text-transform: uppercase;
+    }
+
+    #logo span {
+      color: #fff;
+      font-weight: 300;
+    }
+
+    #live-badge {
+      background: #c0392b;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 4px 10px;
+      border-radius: 3px;
+      animation: pulse-red 1.5s infinite;
+    }
+
+    @keyframes pulse-red {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.6; }
+    }
+
+    #pair-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: #ccc;
+      letter-spacing: 2px;
+    }
+
+    #clock {
+      margin-left: auto;
+      font-size: 14px;
+      color: #888;
+      font-weight: 400;
+      letter-spacing: 1px;
+    }
+
+    /* ── Signal card (bottom-left) ───────────────────────── */
+    #signal-card {
+      position: absolute;
+      bottom: 40px;
+      left: 32px;
+      width: 320px;
+      background: rgba(10, 10, 10, 0.92);
+      border: 1px solid rgba(212,175,55,0.4);
+      border-left: 3px solid #D4AF37;
+      border-radius: 4px;
+      padding: 20px 24px;
+      backdrop-filter: blur(8px);
+    }
+
+    #signal-header {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #D4AF37;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      font-weight: 600;
+    }
+
+    #signal-direction {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      margin-bottom: 2px;
+      transition: color 0.4s;
+    }
+
+    #signal-direction.sell { color: #e74c3c; }
+    #signal-direction.buy  { color: #2ecc71; }
+    #signal-direction.none { color: #666; }
+
+    #signal-pair {
+      font-size: 14px;
+      color: #D4AF37;
+      letter-spacing: 3px;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    #signal-price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 12px;
+    }
+
+    #signal-price-label {
+      font-size: 10px;
+      color: #666;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    #signal-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* ── Bias badge (bottom-left, above signal card) ─────── */
+    #bias-card {
+      position: absolute;
+      bottom: 240px;
+      left: 32px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(10,10,10,0.85);
+      border: 1px solid rgba(212,175,55,0.25);
+      border-radius: 4px;
+      padding: 10px 18px;
+    }
+
+    #bias-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50%       { transform: scale(1.4); opacity: 0.7; }
+    }
+
+    #bias-dot.bearish { background: #e74c3c; }
+    #bias-dot.bullish { background: #2ecc71; }
+    #bias-dot.neutral { background: #888; }
+
+    #bias-text {
+      font-size: 11px;
+      letter-spacing: 3px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    #bias-text.bearish { color: #e74c3c; }
+    #bias-text.bullish { color: #2ecc71; }
+    #bias-text.neutral { color: #888; }
+
+    #bias-label {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* ── Ticker bar (bottom) ─────────────────────────────── */
+    #ticker-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 36px;
+      background: rgba(8,8,8,0.95);
+      border-top: 1px solid rgba(212,175,55,0.2);
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    #ticker-inner {
+      display: flex;
+      animation: scroll-ticker 30s linear infinite;
+      white-space: nowrap;
+    }
+
+    @keyframes scroll-ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .ticker-item {
+      font-size: 11px;
+      color: #888;
+      letter-spacing: 2px;
+      padding: 0 40px;
+      text-transform: uppercase;
+    }
+
+    .ticker-item span {
+      color: #D4AF37;
+      font-weight: 600;
+    }
+
+    /* ── New signal flash ────────────────────────────────── */
+    #flash {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(212,175,55,0.06);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    #flash.active {
+      animation: flash-anim 1s ease-out;
+    }
+
+    @keyframes flash-anim {
+      0%   { opacity: 1; }
+      100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Flash on new signal -->
+  <div id="flash"></div>
+
+  <!-- Top bar -->
+  <div id="top-bar">
+    <div id="logo">AURUM <span>FLOW</span></div>
+    <div id="live-badge">● LIVE</div>
+    <div id="pair-label">XAU / USD</div>
+    <div id="clock">--:--:-- UTC</div>
+  </div>
+
+  <!-- Bias indicator -->
+  <div id="bias-card">
+    <div id="bias-dot" class="neutral"></div>
+    <div>
+      <div id="bias-label">Market Bias</div>
+      <div id="bias-text" class="neutral">NEUTRAL</div>
+    </div>
+  </div>
+
+  <!-- Signal card -->
+  <div id="signal-card">
+    <div id="signal-header">⚡ Latest Signal</div>
+    <div id="signal-direction" class="none">—</div>
+    <div id="signal-pair">XAUUSD</div>
+    <div id="signal-price-row">
+      <div id="signal-price-label">Entry</div>
+      <div id="signal-price">—</div>
+    </div>
+  </div>
+
+  <!-- Ticker -->
+  <div id="ticker-bar">
+    <div id="ticker-inner">
+      <span class="ticker-item">AURUM FLOW — <span>Smart Signal Feed</span></span>
+      <span class="ticker-item">XAUUSD — <span>Gold / US Dollar</span></span>
+      <span class="ticker-item">Free Signals → <span>Link in Bio</span></span>
+      <span class="ticker-item">Risk Management is everything</span>
+      <span class="ticker-item">Powered by <span>Aurum Flow</span></span>
+      <span class="ticker-item">AURUM FLOW — <span>Smart Signal Feed</span></span>
+      <span class="ticker-item">XAUUSD — <span>Gold / US Dollar</span></span>
+      <span class="ticker-item">Free Signals → <span>Link in Bio</span></span>
+      <span class="ticker-item">Risk Management is everything</span>
+      <span class="ticker-item">Powered by <span>Aurum Flow</span></span>
+    </div>
+  </div>
+
+  <script>
+    // ── Clock ──────────────────────────────────────────────
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getUTCHours()).padStart(2,'0');
+      const m = String(now.getUTCMinutes()).padStart(2,'0');
+      const s = String(now.getUTCSeconds()).padStart(2,'0');
+      document.getElementById('clock').textContent = `${h}:${m}:${s} UTC`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // ── Update overlay from state ──────────────────────────
+    function applyState(state) {
+      const bias = (state.bias || 'NEUTRAL').toUpperCase();
+      const type = (state.signal_type || '—').toUpperCase();
+      const price = state.signal_price || '—';
+
+      // Bias
+      const biasClass = bias === 'BEARISH' ? 'bearish' : bias === 'BULLISH' ? 'bullish' : 'neutral';
+      document.getElementById('bias-dot').className  = `bias-dot ${biasClass}`;
+      document.getElementById('bias-text').className = `${biasClass}`;
+      document.getElementById('bias-text').textContent = bias;
+
+      // Signal direction
+      const dirEl = document.getElementById('signal-direction');
+      if (type === 'SELL') {
+        dirEl.textContent  = 'SELL';
+        dirEl.className    = 'sell';
+      } else if (type === 'BUY') {
+        dirEl.textContent  = 'BUY';
+        dirEl.className    = 'buy';
+      } else {
+        dirEl.textContent  = '—';
+        dirEl.className    = 'none';
+      }
+
+      // Price
+      document.getElementById('signal-price').textContent =
+        typeof price === 'number' ? price.toFixed(2) : price;
+    }
+
+    // ── Flash animation on new signal ─────────────────────
+    function flashScreen() {
+      const el = document.getElementById('flash');
+      el.classList.remove('active');
+      void el.offsetWidth; // force reflow
+      el.classList.add('active');
+    }
+
+    // ── WebSocket connection ───────────────────────────────
+    let lastSignalTime = null;
+
+    function connect() {
+      const ws = new WebSocket(`ws://${location.host}/ws`);
+
+      ws.onmessage = (e) => {
+        const state = JSON.parse(e.data);
+        if (state.signal_time && state.signal_time !== lastSignalTime) {
+          if (lastSignalTime !== null) flashScreen();
+          lastSignalTime = state.signal_time;
+        }
+        applyState(state);
+      };
+
+      ws.onclose = () => {
+        // Reconnect after 3s
+        setTimeout(connect, 3000);
+      };
+
+      ws.onerror = () => ws.close();
+    }
+
+    connect();
+  </script>
+</body>
+</html>
