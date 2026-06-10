@@ -4,9 +4,8 @@ import logging.handlers
 import os
 import sys
 
-from config.settings import LOOP_INTERVAL
+from bot.live_mirror import start_live_mirror
 from bot.telegram_client import build_client
-from bot.full_pipeline import run_pipeline
 from data.state import init_db
 
 os.makedirs("logs", exist_ok=True)
@@ -26,52 +25,27 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger("aurumflow.main")
-MAX_ERRORS = 10
 
 
 async def main():
     init_db()
     logger.info("=" * 50)
-    logger.info("  Aurum Flow — XAUUSD Signal Bot")
-    logger.info(f"  Loop interval : {LOOP_INTERVAL}s")
-    logger.info(f"  Log file      : logs/aurumflow.log")
+    logger.info("  Aurum Flow — TrueTrading Live Mirror")
+    logger.info("  Mode          : instant Telethon NewMessage mirror")
+    logger.info("  Log file      : logs/aurumflow.log")
     logger.info("=" * 50)
 
     client = build_client()
     await client.start()
     logger.info("Telegram session active.")
 
-    consecutive_errors = 0
-    cycle = 0
-
-    while True:
-        cycle += 1
-        try:
-            await run_pipeline(client)
-            consecutive_errors = 0
-
-        except (KeyboardInterrupt, SystemExit):
-            logger.info("Shutdown requested by user.")
-            break
-
-        except Exception as e:
-            consecutive_errors += 1
-            logger.error(
-                f"Unhandled error in cycle {cycle} "
-                f"({consecutive_errors}/{MAX_ERRORS}): {e}",
-                exc_info=True,
-            )
-            if consecutive_errors >= MAX_ERRORS:
-                logger.critical(
-                    f"Too many consecutive errors ({MAX_ERRORS}) — stopping."
-                )
-                sys.exit(1)
-
-        logger.info(f"Sleeping {LOOP_INTERVAL}s...\n")
-        await asyncio.sleep(LOOP_INTERVAL)
-
-    await client.disconnect()
-    logger.info("Aurum Flow stopped cleanly.")
+    try:
+        await start_live_mirror(client)
+    except (KeyboardInterrupt, SystemExit):
+        logger.info("Shutdown requested by user.")
+    finally:
+        await client.disconnect()
+        logger.info("Aurum Flow stopped cleanly.")
 
 
 if __name__ == "__main__":

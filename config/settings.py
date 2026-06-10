@@ -9,8 +9,9 @@ API_HASH = os.getenv("API_HASH", "")
 
 # === Telegram Bot (publisher) ===
 BOT_TOKEN = os.getenv("BOT_TOKEN", "")
-OUTPUT_CHANNEL    = os.getenv("CHANNEL_USERNAME",    "@AurumFlowXau")
-OUTPUT_CHANNEL_ES = os.getenv("CHANNEL_USERNAME_ES", "")  # Spanish channel (optional)
+OUTPUT_CHANNEL          = os.getenv("CHANNEL_USERNAME", "@AurumFlowXau")
+OUTPUT_ANALYSIS_CHANNEL = os.getenv("CHANNEL_ANALYSIS_USERNAME", "@aurumflowanalysis")
+OUTPUT_CHANNEL_ES       = os.getenv("CHANNEL_USERNAME_ES", "")  # Spanish channel (optional)
 
 # === Source channels (private, by numeric ID — NO negative sign) ===
 SOURCE_CHANNELS = {
@@ -25,7 +26,7 @@ LOOP_INTERVAL = int(os.getenv("LOOP_INTERVAL", "60"))
 VT_MARKETS_LINK = "https://www.vtmarkets.com/?r=aurumflow"
 
 # === Session file (reuses old system session) ===
-SESSION_NAME = "session"
+SESSION_NAME = os.getenv("SESSION_NAME", "session")
 
 # === Risk levels (pips) ===
 # SL_BUFFER_PIPS : pips added above zone_high (SELL) or below zone_low (BUY)
